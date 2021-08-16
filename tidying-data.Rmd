@@ -1,0 +1,96 @@
+---
+title: "Tidying Data"
+author: "Wylie Hampson"
+date: "8/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+## Read in the wb_indicators.csv, make sure to specify `na = c("..", "")`
+
+```{r}
+wb_indicators <- read_csv(here::here("data", "wb_indicators.csv"), na = c("..", ""))
+```
+
+## Reshape into long format so that year is a single column
+
+```{r}
+wb_indicators_long <- wb_indicators %>%
+  pivot_longer(cols = '2001 [YR2001]':'2020 [YR2020]',
+               names_to = "year",
+               values_to = "indicator_value")
+```
+
+## Clean up that year column
+
+```{r}
+wb_data_sep <- wb_indicators_long %>% 
+  separate(col = year, into = c("year", "year_chr"), sep = " ") %>% 
+  select(-year_chr, -'Country Code', -'Series Code')
+```
+
+## Separate the Series Name column in get indicators in their own column.
+
+```{r}
+wb_data_tidy <- wb_data_sep %>% 
+  drop_na('Series Name') %>% 
+  pivot_wider(names_from = 'Series Name',
+              values_from = indicator_value)
+
+names(wb_data_tidy) <- c("country", "year", "access_clean_fuels", "access_electricity", "co2_emissions", "fossil_fuel_cons", "water_stress")
+
+# Rename a single column rename(new_name = old_name)
+wb_data_tidy <- wb_data_tidy %>% 
+  rename(country_name = country)
+```
+
+
+
+
+
+## Practice
+
+```{r}
+df <- tribble(
+  ~name, ~A, ~B, ~C,
+  "teddy", 4, 5, 6,
+  "khora", 9, 10, 11
+)
+
+df
+
+# If A, B, C, are dog food types, convert this into tidy format.
+
+df_long <- df %>%
+  pivot_longer(cols = A:C,
+               names_to = "dog_food_types",
+               values_to = "occurance")
+
+df_long
+
+# Go back to indicidual columns
+
+df_wide <- df_long %>% 
+  pivot_wider(names_from = dog_food_types,
+              values_from = occurance)
+
+df_wide
+```
+
+
+
+
+
+
+
+
+
+
+
+
