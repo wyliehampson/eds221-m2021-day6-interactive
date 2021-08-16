@@ -218,10 +218,10 @@ exercise_3 <- penguins %>%
   filter(body_mass_g > 3500) %>% 
   select(species, flipper_length_mm, sex) %>% 
   group_by(species, sex) %>% 
-  summarize(flipper_mean = mean(flipper_length_mm),
-            flipper_sd = sd(flipper_length_mm),
-            flipper_max = max(flipper_length_mm),
-            flipper_min = min(flipper_length_mm))
+  summarize(flipper_mean = mean(flipper_length_mm, na.rm = TRUE),
+            flipper_sd = sd(flipper_length_mm, na.rm = TRUE),
+            flipper_max = max(flipper_length_mm, na.rm = TRUE),
+            flipper_min = min(flipper_length_mm, na.rm = TRUE))
 
 exercise_3
 ```
